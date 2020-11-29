@@ -14,7 +14,7 @@ export default class LineGraph extends Component {
     let gradientLine = myChartRef.createLinearGradient(0, 0, graphWidth * 2, 0);
     gradientLine.addColorStop(0, "#FF006E");
     gradientLine.addColorStop(1, "#F46036");
-    console.log(this.props);
+
     const { data, color, labels } = this.props.data;
 
     new Chart(myChartRef, {

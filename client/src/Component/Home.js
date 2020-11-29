@@ -106,7 +106,6 @@ function Home() {
       },
       body: JSON.stringify({
         query,
-        // variables: { chartType },
       }),
     })
       .then((r) => {
