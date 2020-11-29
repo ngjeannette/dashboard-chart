@@ -80,7 +80,6 @@ function Home() {
         let localStorageValue = localStorage.getItem(localStorage.key(i));
         let localStorageKey = localStorage.key(i);
         if (localStorageKey.includes("chartType")) {
-          localStorage.removeItem(localStorageKey);
           let storedValue = JSON.parse(localStorageValue);
           if (storedValue["chartType"]) {
             setChartType(storedValue["chartType"]["chartList"]);
