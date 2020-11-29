@@ -10,4 +10,4 @@ Playing around with:
 - Charts.js
 - Heroku
 
-[💻 Herkou](https://peaceful-brushlands-19064.herokuapp.com/)
+[💻 Heroku](https://peaceful-brushlands-19064.herokuapp.com/)
