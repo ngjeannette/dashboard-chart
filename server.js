@@ -163,8 +163,9 @@ const mutationType = new GraphQLObjectType({
           );
           c.splice(0, 3);
         }
-        let x = (d = [...d, addNewObj]);
-        return x;
+        return addNewObj;
+        // let x = (d = [...d, addNewObj]);
+        // return x;
       },
     },
   },
@@ -182,43 +183,43 @@ const queryType = new GraphQLObjectType({
         },
       },
       resolve: async (_, { chartType }) => {
-        if (!c) {
-          c = await getCommerceApi();
-          let totalChart = chartType.map((item) => {
-            if (item == "pie") {
-              let x = c.reduce(
-                (acc, curr, i) => {
-                  if (i < 3) {
-                    acc.data.push(parseInt(curr.price));
-                    acc.labels.push(curr.product_name);
-                  }
-                  return acc;
-                },
-                { labels: [], data: [], color: colorPie }
-              );
-              c.splice(0, 3);
-              return x;
-            } else if (item == "line" || item == "bar") {
-              let x = c.reduce(
-                (acc, curr, i) => {
-                  if (i < 12) {
-                    acc.data.push(parseInt(curr.price));
-                  }
-                  return acc;
-                },
-                { data: [], color: colorBarLine }
-              );
-              x.labels = labels;
-              c.splice(0, 12);
-              return x;
-            }
-            return;
-          });
-          d = totalChart;
-          return totalChart;
-        } else {
-          return d;
-        }
+        // if (!c) {
+        c = await getCommerceApi();
+        let totalChart = chartType.map((item) => {
+          if (item == "pie") {
+            let x = c.reduce(
+              (acc, curr, i) => {
+                if (i < 3) {
+                  acc.data.push(parseInt(curr.price));
+                  acc.labels.push(curr.product_name);
+                }
+                return acc;
+              },
+              { labels: [], data: [], color: colorPie }
+            );
+            c.splice(0, 3);
+            return x;
+          } else if (item == "line" || item == "bar") {
+            let x = c.reduce(
+              (acc, curr, i) => {
+                if (i < 12) {
+                  acc.data.push(parseInt(curr.price));
+                }
+                return acc;
+              },
+              { data: [], color: colorBarLine }
+            );
+            x.labels = labels;
+            c.splice(0, 12);
+            return x;
+          }
+          return;
+        });
+        // d = totalChart;
+        return totalChart;
+        // } else {
+        //   return d;
+        // }
       },
     },
   },

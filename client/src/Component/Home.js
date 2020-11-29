@@ -37,7 +37,7 @@ function Home() {
 
   useEffect(() => {
     // uncomment reset to restart
-    reset();
+    // reset();
     getChartTypeLocalStorage();
   }, []);
 
@@ -59,8 +59,10 @@ function Home() {
   const saveToLocalStorage = () => {
     const identifier = `key_chartType`;
     let dataArray = {};
-    dataArray["chartType"] = chartType;
+    dataArray["chartType"]["chartList"] = chartType;
+    dataArray["chartType"]["chartData"] = chartData;
     const stringDataArray = JSON.stringify(dataArray);
+    console.log("stringDataArray: ", stringDataArray);
     localStorage.setItem(identifier, stringDataArray);
     setSave(false);
   };
@@ -73,14 +75,21 @@ function Home() {
       if (localStorageKey.includes("chartType")) {
         let storedValue = JSON.parse(localStorageValue);
         if (storedValue["chartType"]) {
-          setChartType(storedValue["chartType"]);
+          setChartType(storedValue["chartType"]["chartList"]);
+          setChartData(storedValue["chartType"]["chartData"]);
+          // get the data from
+          // chartQuery();
+        } else {
+          setChartType(["line", "pie", "pie", "bar"]);
           chartQuery();
+          // if no local storage then save return item into local storage
+          setSave(true);
         }
       }
     }
   }
 
-  //graphql operation
+  //graphql operation to query and get new graphql data.
   const chartQuery = async () => {
     const graphqlValue = await graphqlQuery();
     setChartData(graphqlValue.chart);
@@ -119,9 +128,11 @@ function Home() {
   //graphqlMutation operation to delete
   const chartDelete = async (index) => {
     chartType.splice(index, 1);
-    await setChartType(chartType);
-    const graphqlValue = await graphqlMutationDelete(index);
-    setChartData(graphqlValue.data.deleteChart);
+    chartData.splice(index, 1);
+    setChartType(chartType);
+    setChartData(chartData);
+    // const graphqlValue = await graphqlMutationDelete(index);
+    // setChartData(graphqlValue.data.deleteChart);
     setSave(true);
   };
 
@@ -158,8 +169,11 @@ function Home() {
 
   //graphqlMutation operation to add
   const chartAdd = async (charTypeItem) => {
+    // return 1 value added
     const graphqlValue = await graphqlMutationAdd(charTypeItem);
-    setChartData(graphqlValue.data.addChart);
+    const chartAddItems = [...chartData, graphqlValue.data.addChart];
+    setChartData(chartAddItems);
+    // setChartData(graphqlValue.data.addChart);
     setChartType([...chartType, charTypeItem]);
     setSave(true);
   };
