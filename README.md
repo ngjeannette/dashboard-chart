@@ -9,4 +9,4 @@ Playing around with:
 * Charts.js
 * Heroku
 
-[💻 Herkou](https://peaceful-brushlands-19064.herokuapp.com//)
+[💻 Herkou](https://peaceful-brushlands-19064.herokuapp.com/)
