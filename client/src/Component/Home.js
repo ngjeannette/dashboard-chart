@@ -37,7 +37,7 @@ function Home() {
 
   useEffect(() => {
     // uncomment reset to restart
-    reset();
+    // reset();
     getChartTypeLocalStorage();
   }, []);
 
