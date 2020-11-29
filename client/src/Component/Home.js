@@ -58,42 +58,57 @@ function Home() {
   // save current charts to localstorage
   const saveToLocalStorage = () => {
     const identifier = `key_chartType`;
-    let dataArray = {};
+    let dataArray = {
+      chartType: {
+        chartList: [],
+        chartData: [],
+      },
+    };
+
     dataArray["chartType"]["chartList"] = chartType;
     dataArray["chartType"]["chartData"] = chartData;
     const stringDataArray = JSON.stringify(dataArray);
-    console.log("stringDataArray: ", stringDataArray);
+
     localStorage.setItem(identifier, stringDataArray);
     setSave(false);
   };
 
   // get chartType from local storage
-  function getChartTypeLocalStorage() {
-    for (var i = 0; i < localStorage.length; i++) {
-      let localStorageValue = localStorage.getItem(localStorage.key(i));
-      let localStorageKey = localStorage.key(i);
-      if (localStorageKey.includes("chartType")) {
-        let storedValue = JSON.parse(localStorageValue);
-        if (storedValue["chartType"]) {
-          setChartType(storedValue["chartType"]["chartList"]);
-          setChartData(storedValue["chartType"]["chartData"]);
-          // get the data from
-          // chartQuery();
-        } else {
-          setChartType(["line", "pie", "pie", "bar"]);
-          chartQuery();
-          // if no local storage then save return item into local storage
-          setSave(true);
+  const getChartTypeLocalStorage = async () => {
+    if (localStorage.length > 0) {
+      for (var i = 0; i < localStorage.length; i++) {
+        let localStorageValue = localStorage.getItem(localStorage.key(i));
+        let localStorageKey = localStorage.key(i);
+        if (localStorageKey.includes("chartType")) {
+          localStorage.removeItem(localStorageKey);
+          let storedValue = JSON.parse(localStorageValue);
+          if (storedValue["chartType"]) {
+            setChartType(storedValue["chartType"]["chartList"]);
+            setChartData(storedValue["chartType"]["chartData"]);
+            setIsLoading(false);
+            // get the data from
+            // chartQuery();
+          }
         }
       }
+    } else {
+      setChartType(["line", "pie", "pie", "bar"]);
+      const queryValue = await chartQuery();
+      setChartData(queryValue);
+
+      // if no local storage then save return item into local storage
+      setSave(true);
+      setIsLoading(false);
     }
-  }
+  };
 
   //graphql operation to query and get new graphql data.
   const chartQuery = async () => {
     const graphqlValue = await graphqlQuery();
-    setChartData(graphqlValue.chart);
-    setIsLoading(false);
+    return graphqlValue.chart;
+    //
+    // setChartData(graphqlValue.chart);
+    // setIsLoading(false);
   };
 
   const graphqlQuery = () => {
@@ -168,18 +183,18 @@ function Home() {
   };
 
   //graphqlMutation operation to add
-  const chartAdd = async (charTypeItem) => {
+  const chartAdd = async (chartTypeItem) => {
     // return 1 value added
-    const graphqlValue = await graphqlMutationAdd(charTypeItem);
-    const chartAddItems = [...chartData, graphqlValue.data.addChart];
+    const graphqlValue = await graphqlMutationAdd(chartTypeItem);
+    const chartAddItems = [...chartData, ...graphqlValue.data.addChart];
     setChartData(chartAddItems);
     // setChartData(graphqlValue.data.addChart);
-    setChartType([...chartType, charTypeItem]);
+    setChartType([...chartType, chartTypeItem]);
     setSave(true);
   };
 
-  const graphqlMutationAdd = (charTypeItem) => {
-    const passArg = JSON.stringify(charTypeItem);
+  const graphqlMutationAdd = (chartTypeItem) => {
+    const passArg = JSON.stringify(chartTypeItem);
     const mutation = `
       mutation {
         addChart(chart: {
@@ -228,7 +243,7 @@ function Home() {
           chartType.length > 0 &&
           chartData.length > 0 &&
           chartType.map((chart, index) => {
-            if (chart == "bar") {
+            if (chart === "bar") {
               return (
                 <ChartContainer key={index}>
                   <Bar data={chartData[index]} />
@@ -243,7 +258,7 @@ function Home() {
                   </button>
                 </ChartContainer>
               );
-            } else if (chart == "pie") {
+            } else if (chart === "pie") {
               return (
                 <ChartContainer key={index}>
                   <Pie data={chartData[index]} />
@@ -258,7 +273,7 @@ function Home() {
                   </button>
                 </ChartContainer>
               );
-            } else if (chart == "line") {
+            } else if (chart === "line") {
               return (
                 <ChartContainer key={index}>
                   <Line data={chartData[index]} />

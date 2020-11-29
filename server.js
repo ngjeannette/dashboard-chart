@@ -163,7 +163,7 @@ const mutationType = new GraphQLObjectType({
           );
           c.splice(0, 3);
         }
-        return addNewObj;
+        return [addNewObj];
         // let x = (d = [...d, addNewObj]);
         // return x;
       },
